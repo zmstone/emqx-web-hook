@@ -149,57 +149,57 @@ validate_hook_resp(Body = ?ACTION(<<"client_connect">>)) ->
     ?assertEqual(5,  maps:get(<<"proto_ver">>, Body)),
     ?assertEqual(60, maps:get(<<"keepalive">>, Body)),
     ?assertEqual(<<"127.0.0.1">>, maps:get(<<"ipaddress">>, Body)),
-    ?assertEqual(<<"emqx@127.0.0.1">>, maps:get(<<"node">>, Body)),
+    ?assertEqual(<<"test@127.0.0.1">>, maps:get(<<"node">>, Body)),
     assert_username_clientid(Body);
 validate_hook_resp(Body = ?ACTION(<<"client_connack">>)) ->
     ?assertEqual(5,  maps:get(<<"proto_ver">>, Body)),
     ?assertEqual(60, maps:get(<<"keepalive">>, Body)),
     ?assertEqual(<<"success">>, maps:get(<<"conn_ack">>, Body)),
     ?assertEqual(<<"127.0.0.1">>, maps:get(<<"ipaddress">>, Body)),
-    ?assertEqual(<<"emqx@127.0.0.1">>, maps:get(<<"node">>, Body)),
+    ?assertEqual(<<"test@127.0.0.1">>, maps:get(<<"node">>, Body)),
     assert_username_clientid(Body);
 validate_hook_resp(Body = ?ACTION(<<"client_connected">>)) ->
     _ = maps:get(<<"connected_at">>, Body),
     ?assertEqual(5,  maps:get(<<"proto_ver">>, Body)),
     ?assertEqual(60, maps:get(<<"keepalive">>, Body)),
     ?assertEqual(<<"127.0.0.1">>, maps:get(<<"ipaddress">>, Body)),
-    ?assertEqual(<<"emqx@127.0.0.1">>, maps:get(<<"node">>, Body)),
+    ?assertEqual(<<"test@127.0.0.1">>, maps:get(<<"node">>, Body)),
     assert_username_clientid(Body);
 validate_hook_resp(Body = ?ACTION(<<"client_disconnected">>)) ->
     ?assertEqual(<<"normal">>, maps:get(<<"reason">>, Body)),
-    ?assertEqual(<<"emqx@127.0.0.1">>, maps:get(<<"node">>, Body)),
+    ?assertEqual(<<"test@127.0.0.1">>, maps:get(<<"node">>, Body)),
     assert_username_clientid(Body);
 validate_hook_resp(Body = ?ACTION(<<"client_subscribe">>)) ->
     _ = maps:get(<<"opts">>, Body),
     ?assertEqual(<<"TopicA">>, maps:get(<<"topic">>, Body)),
-    ?assertEqual(<<"emqx@127.0.0.1">>, maps:get(<<"node">>, Body)),
+    ?assertEqual(<<"test@127.0.0.1">>, maps:get(<<"node">>, Body)),
     assert_username_clientid(Body);
 validate_hook_resp(Body = ?ACTION(<<"client_unsubscribe">>)) ->
     _ = maps:get(<<"opts">>, Body),
     ?assertEqual(<<"TopicA">>, maps:get(<<"topic">>, Body)),
-    ?assertEqual(<<"emqx@127.0.0.1">>, maps:get(<<"node">>, Body)),
+    ?assertEqual(<<"test@127.0.0.1">>, maps:get(<<"node">>, Body)),
     assert_username_clientid(Body);
 validate_hook_resp(Body = ?ACTION(<<"session_subscribed">>)) ->
     _ = maps:get(<<"opts">>, Body),
     ?assertEqual(<<"TopicA">>, maps:get(<<"topic">>, Body)),
-    ?assertEqual(<<"emqx@127.0.0.1">>, maps:get(<<"node">>, Body)),
+    ?assertEqual(<<"test@127.0.0.1">>, maps:get(<<"node">>, Body)),
     assert_username_clientid(Body);
 validate_hook_resp(Body = ?ACTION(<<"session_unsubscribed">>)) ->
     ?assertEqual(<<"TopicA">>, maps:get(<<"topic">>, Body)),
-    ?assertEqual(<<"emqx@127.0.0.1">>, maps:get(<<"node">>, Body)),
+    ?assertEqual(<<"test@127.0.0.1">>, maps:get(<<"node">>, Body)),
     assert_username_clientid(Body);
 validate_hook_resp(Body = ?ACTION(<<"session_terminated">>)) ->
     ?assertEqual(<<"normal">>, maps:get(<<"reason">>, Body)),
-    ?assertEqual(<<"emqx@127.0.0.1">>, maps:get(<<"node">>, Body)),
+    ?assertEqual(<<"test@127.0.0.1">>, maps:get(<<"node">>, Body)),
     assert_username_clientid(Body);
 validate_hook_resp(Body = ?ACTION(<<"message_publish">>)) ->
-    ?assertEqual(<<"emqx@127.0.0.1">>, maps:get(<<"node">>, Body)),
+    ?assertEqual(<<"test@127.0.0.1">>, maps:get(<<"node">>, Body)),
     assert_messages_attrs(Body);
 validate_hook_resp(Body = ?ACTION(<<"message_delivered">>)) ->
-    ?assertEqual(<<"emqx@127.0.0.1">>, maps:get(<<"node">>, Body)),
+    ?assertEqual(<<"test@127.0.0.1">>, maps:get(<<"node">>, Body)),
     assert_messages_attrs(Body);
 validate_hook_resp(Body = ?ACTION(<<"message_acked">>)) ->
-    ?assertEqual(<<"emqx@127.0.0.1">>, maps:get(<<"node">>, Body)),
+    ?assertEqual(<<"test@127.0.0.1">>, maps:get(<<"node">>, Body)),
     assert_messages_attrs(Body).
 
 assert_username_clientid(#{<<"clientid">> := ClientId, <<"username">> := Username}) ->

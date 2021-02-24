@@ -52,32 +52,19 @@ translate_env() ->
     {ok, URL} = application:get_env(?APP, url),
     #{host := Host0,
       path := Path0,
-      scheme := Scheme} = URIMap = uri_string:parse(add_default_scheme(URL)),
+      scheme := Scheme} = URIMap = uri_string:parse(add_default_scheme(uri_string:normalize(URL))),
     Port = maps:get(port, URIMap, case Scheme of
                                       "https" -> 443;
-                                      _ -> 80
+                                      "http" -> 80
                                   end),
     Path = path(Path0),
+    {Inet, Host} = parse_host(Host0),
     PoolSize = application:get_env(?APP, pool_size, 32),
-    Host = case inet:parse_address(Host0) of
-                       {ok, {_,_,_,_} = Addr} -> Addr;
-                       {ok, {_,_,_,_,_,_,_,_} = Addr} -> Addr;
-                       {error, einval} -> Host0
-                   end,
-    Inet = case Host of
-                       {_,_,_,_} -> inet;
-                       {_,_,_,_,_,_,_,_} -> inet6;
-                       _ ->
-                           case inet:getaddr(Host, inet6) of
-                               {error, _} -> inet;
-                               {ok, _} -> inet6
-                           end
-                   end,
     MoreOpts = case Scheme of
                    "http" ->
                        [{transport_opts, [Inet]}];
                    "https" ->
-                       CACertFile = application:get_env(?APP, cafile, undefined),
+                       CACertFile = application:get_env(?APP, cacertfile, undefined),
                        CertFile = application:get_env(?APP, certfile, undefined),
                        KeyFile = application:get_env(?APP, keyfile, undefined),
                        {ok, Verify} = application:get_env(?APP, verify),
@@ -88,13 +75,12 @@ translate_env() ->
                        TLSOpts = lists:filter(fun({_K, V}) ->
                                                 V /= <<>> andalso V /= undefined andalso V /= "" andalso true
                                               end, [{keyfile, KeyFile}, {certfile, CertFile}, {cacertfile, CACertFile}]),
-                       TlsVers = ['tlsv1.2','tlsv1.1',tlsv1],
-                       NTLSOpts = [{verify, VerifyType},
-                                   {versions, TlsVers},
-                                   {ciphers, lists:foldl(fun(TlsVer, Ciphers) ->
-                                                               Ciphers ++ ssl:cipher_suites(all, TlsVer)
-                                                           end, [], TlsVers)} | TLSOpts],
-                       [{transport, ssl}, {transport_opts, [Inet| NTLSOpts]}]
+                       NTLSOpts = [ {verify, VerifyType}
+                                  , {versions, emqx_tls_lib:default_versions()}
+                                  , {ciphers, emqx_tls_lib:default_ciphers()}
+                                  | TLSOpts
+                                  ],
+                       [{transport, ssl}, {transport_opts, [Inet | NTLSOpts]}]
                 end,
     PoolOpts = [{host, Host},
                 {port, Port},
@@ -117,3 +103,14 @@ path(Path) ->
 set_content_type(Headers) ->
     NHeaders = proplists:delete(<<"Content-Type">>, proplists:delete(<<"content-type">>, Headers)),
     [{<<"content-type">>, <<"application/json">>} | NHeaders].
+
+parse_host(Host) ->
+    case inet:parse_address(Host) of
+        {ok, Addr} when size(Addr) =:= 4 -> {inet, Addr};
+        {ok, Addr} when size(Addr) =:= 8 -> {inet6, Addr};
+        {error, einval} ->
+            case inet:getaddr(Host, inet6) of
+                {ok, _} -> {inet6, Host};
+                {error, _} -> {inet, Host}
+            end
+    end.
