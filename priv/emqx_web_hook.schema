@@ -1,29 +1,29 @@
 %%-*- mode: erlang -*-
 %% EMQ X R3.0 config mapping
 
-{mapping, "web.hook.api.url", "emqx_web_hook.url", [
+{mapping, "web.hook.url", "emqx_web_hook.url", [
   {datatype, string}
 ]}.
 
+{mapping, "web.hook.headers.$name", "emqx_web_hook.headers", [
+  {datatype, string}
+]}.
 
-{mapping, "web.hook.ssl.cafile", "emqx_web_hook.cafile", [
-  {default, ""},
+{mapping, "web.hook.body.encoding_of_payload_field", "emqx_web_hook.encoding_of_payload_field", [
+  {default, plain},
+  {datatype, {enum, [plain, base62, base64]}}
+]}.
+
+{mapping, "web.hook.ssl.cacertfile", "emqx_web_hook.cacertfile", [
   {datatype, string}
 ]}.
 
 {mapping, "web.hook.ssl.certfile", "emqx_web_hook.certfile", [
-  {default, ""},
   {datatype, string}
 ]}.
 
 {mapping, "web.hook.ssl.keyfile", "emqx_web_hook.keyfile", [
-  {default, ""},
   {datatype, string}
-]}.
-
-{mapping, "web.hook.encode_payload", "emqx_web_hook.encode_payload", [
-  {default, undefined},
-  {datatype, {enum, [base62, base64]}}
 ]}.
 
 {mapping, "web.hook.ssl.verify", "emqx_web_hook.verify", [
@@ -81,10 +81,6 @@
 ]}.
 
 {mapping, "web.hook.rule.message.delivered.$name", "emqx_web_hook.rules", [
-  {datatype, string}
-]}.
-
-{mapping, "web.hook.headers.$name", "emqx_web_hook.headers", [
   {datatype, string}
 ]}.
 

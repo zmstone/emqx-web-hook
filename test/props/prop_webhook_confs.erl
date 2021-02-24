@@ -34,9 +34,8 @@
 
 prop_confs() ->
     Schema = cuttlefish_schema:files(filelib:wildcard(code:priv_dir(emqx_web_hook) ++ "/*.schema")),
-    ?ALL({Url, Confs0}, {url(), confs()},
+    ?ALL(Confs, confs(),
         begin
-            Confs = [{"web.hook.api.url", Url}|Confs0],
             Envs = cuttlefish_generator:map(Schema, cuttlefish_conf_file(Confs)),
 
             assert_confs(Confs, Envs),
@@ -113,7 +112,8 @@ cuttlefish_conf_option(K, V)
 %%--------------------------------------------------------------------
 
 confs() ->
-    nof([{"web.hook.encode_payload", oneof(["base64", "base62"])},
+    nof([{"web.hook.api.url", url()},
+         {"web.hook.encode_payload", oneof(["base64", "base62"])},
          {"web.hook.rule.client.connect.1", rule_spec()},
          {"web.hook.rule.client.connack.1", rule_spec()},
          {"web.hook.rule.client.connected.1", rule_spec()},

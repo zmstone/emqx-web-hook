@@ -338,7 +338,8 @@ send_http_request(ClientID, Params) ->
             ?LOG(warning, "HTTP request failed with status code: ~p", [StatusCode]),
             ok;
         {error, Reason} ->
-            ?LOG(error, "HTTP request error: ~p", [Reason]), ok
+            ?LOG(error, "HTTP request error: ~p", [Reason]),
+            ok
     end.
 
 parse_rule(Rules) ->
@@ -371,11 +372,11 @@ parse_from(Message) ->
     {emqx_message:from(Message), maybe(emqx_message:get_header(username, Message))}.
 
 encode_payload(Payload) ->
-    encode_payload(Payload, application:get_env(?APP, encode_payload, undefined)).
+    encode_payload(Payload, application:get_env(?APP, encoding_of_payload_field, plain)).
 
 encode_payload(Payload, base62) -> emqx_base62:encode(Payload);
 encode_payload(Payload, base64) -> base64:encode(Payload);
-encode_payload(Payload, _) -> Payload.
+encode_payload(Payload, plain) -> Payload.
 
 stringfy(Term) when is_atom(Term); is_binary(Term) ->
     Term;
@@ -384,4 +385,4 @@ stringfy(Term) ->
 
 maybe(undefined) -> null;
 maybe(Str) -> Str.
-    
+
